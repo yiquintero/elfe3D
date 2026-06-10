@@ -11,8 +11,8 @@ ARCH = $(shell uname -m)
 # determine hostname
 HOST = $(shell hostname)
 
-# object files created during compilation
-OBJ =   mod_constant.o \
+# core object files created during compilation
+CORE_OBJS =   mod_constant.o \
 	mod_types_basic.o \
 	mod_util.o \
 	mod_vector_products.o \
@@ -30,6 +30,9 @@ OBJ =   mod_constant.o \
 	mod_error_estimates.o \
 	mod_tetgen_operations.o \
 	elfe3d.o
+
+# Main app executable object 
+MAIN_OBJ = main.o
 
 
 # link MUMPS libaries here!
@@ -92,22 +95,45 @@ FFLAGS += -I$(MUMPS_ROOT)/include
 #
 help:
 	@echo "   make clean  -  remove all object, module and executable files"
-	@echo "   make all    -  make all object, module and executable files"
+	@echo "   make all    -  make standalone executable, static library and python extension"
+	@echo "   make app    -  make standalone executable"
+	@echo "   make lib    -  make static library"
+	@echo "   make python -  make python extension"
 
-#
-# Dependencies of object files and their compilation rules
-#
-$(OBJ): %.o: %.f90 
+
+
+# Default rule to compile everything: the app, the library and python wrapper
+all: elfe3d lib python
+
+# Rule to compile object files
+%.o: %.f90 
 	$(FCC) $(FFLAGS) $(COMPFLAGS) -c $< -o $@ 
+
+# Target elfe3d: build the standalone executable application
+elfe3d: $(MAIN_OBJ) $(CORE_OBJS)
+	$(FCC) $(FFLAGS) $(MAIN_OBJ) $(CORE_OBJS) $(OBJUTIL) -Wl,-rpath=$(MUMPS_ROOT)/lib -Wl,-rpath=$(METIS_ROOT)/lib -Wl,-rpath=$(SCOTCH_ROOT)/lib -o elfe3d 
+
+# Target lib: build reusable static library for other Fortran programs
+lib: $(CORE_OBJS)
+	ar rcs libelfe3d.a $(CORE_OBJS)
+	@echo "Library libelfe3d.a and module files (.mod) are ready"
+
+# Target python: build the Python extension linking against the static library
+python: lib
+	FC=$(FCC) FFLAGS="$(FFLAGS)" python -m numpy.f2py -c -m elfe3d python_exposures.pyf \
+		-L. -lelfe3d \
+		-I$(MUMPS_ROOT)/include \
+		$(OBJUTIL) \
+		-Wl,-rpath=$(MUMPS_ROOT)/lib -Wl,-rpath=$(METIS_ROOT)/lib -Wl,-rpath=$(SCOTCH_ROOT)/lib
 
 #
 # Linking stage
 #
-all: $(OBJ)
-	$(FCC) $(FFLAGS) $(OBJ) $(OBJUTIL) -Wl,-rpath=$(MUMPS_ROOT)/lib -Wl,-rpath=$(METIS_ROOT)/lib -Wl,-rpath=$(SCOTCH_ROOT)/lib -o elfe3d 
+#all: $(OBJ)
+#	$(FCC) $(FFLAGS) $(OBJ) $(OBJUTIL) -Wl,-rpath=$(MUMPS_ROOT)/lib -Wl,-rpath=$(METIS_ROOT)/lib -Wl,-rpath=$(SCOTCH_ROOT)/lib -o elfe3d 
 
 # clean up
 .PHONY: clean
 
 clean:
-	rm -f *.o *.mod in/*.vol
+	rm -f *.o *.mod *.a *.so in/*.vol

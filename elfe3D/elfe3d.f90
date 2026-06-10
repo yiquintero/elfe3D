@@ -48,7 +48,7 @@
 !>  License for the specific language governing permissions and 
 !>  limitations under the License.            
 
-program elfe3d
+subroutine solve
 
   ! Include modules
   use mod_util
@@ -1179,4 +1179,4 @@ program elfe3d
   seconds = omp_get_wtime ( ) - seconds;
   print '("Real time to run elfe3D = ",f9.3," seconds.")',seconds
 
-end program elfe3d
+end subroutine solve

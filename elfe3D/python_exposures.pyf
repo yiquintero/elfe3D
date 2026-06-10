@@ -1,0 +1,9 @@
+python module python_exposures
+  interface
+
+    ! Main solver
+    subroutine solve
+    end subroutine solve
+
+  end interface
+end python module python_exposures
