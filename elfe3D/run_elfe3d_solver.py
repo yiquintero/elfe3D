@@ -7,6 +7,8 @@ def main():
     #elfe3d.solve() # This executes your Fortran 'subroutine solve'
     #print("Solver finished successfully!")
 
+    print(elfe3d.pyexample.add.__doc__)
+
     # Use oder=F to match Fortran row-major memory layout
     A = np.array([[1.0, 2.0, 3.0],
                   [4.0, 5.0, 6.0], 

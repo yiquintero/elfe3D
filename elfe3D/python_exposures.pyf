@@ -9,16 +9,18 @@ python module elfe3d
     module pyexample
 
       ! add:mod_pyexample.f90
-      subroutine add(A, B, C)
-        integer intent(hide), depend(A) :: Arows = shape(A, 0)
-        integer intent(hide), depend(A) :: Acols = shape(A, 1)
+      subroutine add(A, B, C, m, n)
+        ! Matrix dimensions are hidden from the Python interface
+        ! depend(A) tells f2py to create m and n after A
+        integer, intent(hide), depend(A) :: m = shape(A, 0)
+        integer, intent(hide), depend(A) :: n = shape(A, 1)
 
         ! Define the arrays using the extracted dimensions
         ! Cannot use real(kind=dp) here
-        double precision dimension(Arows, Acols), intent(in) :: A
-        double precision dimension(Arows, Acols), intent(in) :: B
-        double precision dimension(Arows, Acols), intent(out) :: C
-      end subroutine
+        double precision, dimension(m, n), intent(in) :: A
+        double precision, dimension(m, n), intent(in) :: B
+        double precision, dimension(m, n), intent(out), depend(m, n) :: C
+      end subroutine add
     
     end module pyexample
 

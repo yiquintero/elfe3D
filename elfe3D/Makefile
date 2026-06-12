@@ -29,6 +29,7 @@ CORE_OBJS = mod_constant.o \
 		mod_calculate_tf.o \
 		mod_error_estimates.o \
 		mod_tetgen_operations.o \
+		mod_pyexample.o \
 		elfe3d.o
 
 # Main app executable object
