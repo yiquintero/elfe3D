@@ -5,5 +5,22 @@ python module elfe3d
     subroutine solve
     end subroutine solve
 
+    ! pyexample:mod_pyexample.f90
+    module pyexample
+
+      ! add:mod_pyexample.f90
+      subroutine add(A, B, C)
+        integer intent(hide), depend(A) :: Arows = shape(A, 0)
+        integer intent(hide), depend(A) :: Acols = shape(A, 1)
+
+        ! Define the arrays using the extracted dimensions
+        ! Cannot use real(kind=dp) here
+        double precision dimension(Arows, Acols), intent(in) :: A
+        double precision dimension(Arows, Acols), intent(in) :: B
+        double precision dimension(Arows, Acols), intent(out) :: C
+      end subroutine
+    
+    end module pyexample
+
   end interface
 end python module elfe3d
