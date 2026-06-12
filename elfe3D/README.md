@@ -101,6 +101,15 @@ The following steps guide you through the `elfe3D` compilation:
   $ ./elfe3d
   ```
 
+### Usage from Python
+
+`elfe3d` can be compiled as a Python extension to be used from Python. When running `make all`, both the standalone Fortran executable and the Python extension are compiled. Run `make python` to only build the Python extension and `make elfe3d` to only build the standalone execuatble.
+
+Fortran functions exposed to Python are specified in [python_exposures.pyf](python_exposures.pyf). An example of a Python script that calls elfe3d is provided in [run_elfe3d_solver.py](run_elfe3d_solver.py).
+
+Note that the Python extension `elfe3d.cpython-<version-architecture>.so` should be located in the same directory as the Python script that calls on it.
+
+
 ### Input files
 
 
