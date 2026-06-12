@@ -1,7 +1,7 @@
 # choose compiler
-#FCC = ifx
-#FCC = flang
-#FCC = nvfortran
+FCC = ifx
+FCC = flang
+FCC = nvfortran
 FCC = gfortran
 
 # determine operating system
@@ -13,23 +13,23 @@ HOST = $(shell hostname)
 
 # core object files created during compilation
 CORE_OBJS = mod_constant.o \
-mod_types_basic.o \
-mod_util.o \
-mod_vector_products.o \
-mod_define_model.o \
-mod_read_mesh.o \
-mod_calculate_matrices.o \
-mod_model_parameters.o \
-mod_interp_functions.o \
-mod_calculate_local_left.o \
-mod_calculate_global_source.o \
-mod_BC.o \
-mod_sparse_matrix_operations.o \
-mod_solvers.o \
-mod_calculate_tf.o \
-mod_error_estimates.o \
-mod_tetgen_operations.o \
-elfe3d.o
+		mod_types_basic.o \
+		mod_util.o \
+		mod_vector_products.o \
+		mod_define_model.o \
+		mod_read_mesh.o \
+		mod_calculate_matrices.o \
+		mod_model_parameters.o \
+		mod_interp_functions.o \
+		mod_calculate_local_left.o \
+		mod_calculate_global_source.o \
+		mod_BC.o \
+		mod_sparse_matrix_operations.o \
+		mod_solvers.o \
+		mod_calculate_tf.o \
+		mod_error_estimates.o \
+		mod_tetgen_operations.o \
+		elfe3d.o
 
 # Main app executable object
 MAIN_OBJ = main.o
@@ -90,16 +90,16 @@ FFLAGS += -L$(SCOTCH_ROOT)/lib64 -L$(METIS_ROOT)/lib -L$(MUMPS_ROOT)/lib -L$(PET
 # Default command.
 #
 .DEFAULT:
-@echo "Unknown target $@, try: make help"
+		@echo "Unknown target $@, try: make help"
 
 #
 # Local help file.
 #
 help:
-@echo " make clean - remove all object, module and executable files"
-@echo " make all - make standalone executable and python extension"
-@echo " make elfe3d - make standalone executable"
-@echo " make python - make python extension"
+		@echo " make clean - remove all object, module and executable files"
+		@echo " make all - make standalone executable and python extension"
+		@echo " make elfe3d - make standalone executable"
+		@echo " make python - make python extension"
 
 
 
@@ -108,31 +108,31 @@ all: elfe3d python
 
 # Rule to compile object files
 %.o: %.f90
-$(FCC) $(FFLAGS) $(COMPFLAGS) -c $< -o $@
+		$(FCC) $(FFLAGS) $(COMPFLAGS) -c $< -o $@
 
 # Target elfe3d: build the standalone executable application
 elfe3d: $(MAIN_OBJ) $(CORE_OBJS)
-$(FCC) $(FFLAGS) $(MAIN_OBJ) $(CORE_OBJS) $(OBJUTIL) -Wl,-rpath=$(MUMPS_ROOT)/lib -Wl,-rpath=$(METIS_ROOT)/lib -Wl,-rpath=$(SCOTCH_ROOT)/lib -o elfe3d
+		$(FCC) $(FFLAGS) $(MAIN_OBJ) $(CORE_OBJS) $(OBJUTIL) -Wl,-rpath=$(MUMPS_ROOT)/lib -Wl,-rpath=$(METIS_ROOT)/lib -Wl,-rpath=$(SCOTCH_ROOT)/lib -o elfe3d
 
 # Target libelfe3d.a: build a static library needed by the python wrapper
 # $@ expands to target name (libelfe3d.a)
 # $^ exapands to all pre-requisites (CORE_OBJS)
 libelfe3d.a: $(CORE_OBJS)
-ar rcs $@ $^
-@echo "Library libelfe3d.a and module files (.mod) are ready"
+		ar rcs $@ $^
+		@echo "Library libelfe3d.a and module files (.mod) are ready"
 
 # Target python: build the Python extension linking against the static library (libelfe3d.a)
 python: libelfe3d.a
-FC=$(FCC) FFLAGS="$(FFLAGS)" \
-LDFLAGS="-Wl,-rpath=$(MUMPS_ROOT)/lib -Wl,-rpath=$(METIS_ROOT)/lib -Wl,-rpath=$(SCOTCH_ROOT)/lib64 -fopenmp" \
-NPY_DISTUTILS_APPEND_FLAGS=1 \
-python -m numpy.f2py -c -m elfe3d python_exposures.pyf \
--L. -lelfe3d \
--I$(MUMPS_ROOT)/include \
-$(OBJUTIL)
+		FC=$(FCC) FFLAGS="$(FFLAGS)" \
+				LDFLAGS="-Wl,-rpath=$(MUMPS_ROOT)/lib -Wl,-rpath=$(METIS_ROOT)/lib -Wl,-rpath=$(SCOTCH_ROOT)/lib64 -fopenmp" \
+				NPY_DISTUTILS_APPEND_FLAGS=1 \
+				python -m numpy.f2py -c -m elfe3d python_exposures.pyf \
+				-L. -lelfe3d \
+				-I$(MUMPS_ROOT)/include \
+				$(OBJUTIL)
 
 # clean up
 .PHONY: clean
 
 clean:
-rm -f *.o *.mod *.a *.so in/*.vol elfe3d elfe3d*.so
+		rm -f *.o *.mod *.a *.so in/*.vol elfe3d elfe3d*.so
