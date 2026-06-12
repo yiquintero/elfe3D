@@ -1,4 +1,4 @@
-python module python_exposures
+python module elfe3d
   interface
 
     ! Main solver
@@ -6,4 +6,4 @@ python module python_exposures
     end subroutine solve
 
   end interface
-end python module python_exposures
+end python module elfe3d
